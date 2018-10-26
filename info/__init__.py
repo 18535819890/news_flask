@@ -33,7 +33,7 @@ def create_app(config_name):
     Session(app)
 
     #导入蓝图对象，注册蓝图
-    from info.news import api
+    from info.modules import api
     app.register_blueprint(api)
 
     return app
