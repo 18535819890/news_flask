@@ -1,8 +1,8 @@
-from flask import session
+from info import create_app
 
-from info import app
-
-
+#调用函数获取app
+app=create_app("development")
+# app=create_app("production")
 
 if __name__ == '__main__':
     print(app.url_map)
