@@ -1,5 +1,5 @@
 from redis import StrictRedis
-#
+
 class Config():
     # 调试信息
     DEBUG = None
