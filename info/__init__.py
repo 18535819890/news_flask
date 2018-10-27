@@ -9,7 +9,7 @@ from logging.handlers import RotatingFileHandler
 from redis import StrictRedis
 
 # 实例化redis连接对象,需要存储和业务相关的数据比如图片验证码
-redis_instance = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
+redis_instance = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT,decode_responses=True)
 # 实例化sqlalchemy对象
 db = SQLAlchemy()
 
