@@ -151,13 +151,18 @@ $(function(){
 var imageCodeId = ""
 
 // TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
+// function generateImageCode() {
+//     imageCodeId=generateUUID()
+//     //http://127.0.0.1:5000/image_code?image_code_id=UUID
+//     var url="/image_code?image_code_id="+imageCodeId
+//     $(".get_pic_code").attr("src",url);
+// }
 function generateImageCode() {
-    imageCodeId=generateUUID()
+    imageCodeId = generateUUID();
     //http://127.0.0.1:5000/image_code?image_code_id=UUID
-    var url="/image_code?image_code_id="+imageCodeId
-    $(".get_pic_code").attr("src",url);
+    var url = '/image_code?image_code_id=' + imageCodeId
+    $('.get_pic_code').attr('src',url);
 }
-
 // 发送短信验证码
 function sendSMSCode() {
     // 校验参数，保证输入框有数据填写
@@ -177,13 +182,13 @@ function sendSMSCode() {
         return;
     }
 
-    // TODO 发送短信验证码
+    // 发送短信验证码
     var params = {
         'mobile':mobile,
         'image_code':imageCode,
         'image_code_id':imageCodeId
     };
-        // 发送post请求
+    // 发送post请求
     $.ajax({
         url:'/sms_code',
         type:'post',
@@ -214,6 +219,7 @@ function sendSMSCode() {
 
 
     })
+
 }
 
 // 调用该函数模拟点击左侧按钮

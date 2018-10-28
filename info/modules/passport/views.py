@@ -64,23 +64,24 @@ def send_sms_code():
     image_code = request.json.get('image_code')
     image_code_id = request.json.get('image_code_id')
     # 检查参数的完整性
-    if not all([mobile,image_code,image_code_id]):
-        return jsonify(errno=RET.PARAMERR,errmsg='参数不完整')
-    # 校验手机号
-    if not re.match(r'1[3456789]\d{9}$',mobile):
-        return jsonify(errno=RET.PARAMERR,errmsg='手机号格式错误')
+    # if not mobile and image_code and image_code_id:
+    if not all([mobile, image_code, image_code_id]):
+        return jsonify(errno=RET.PARAMERR, errmsg='参数不完整')
+    # 校验手机号131123456789
+    if not re.match(r'1[3456789]\d{9}$', mobile):
+        return jsonify(errno=RET.PARAMERR, errmsg='手机号格式错误')
     # 尝试从redis中获取真实的图片验证码
     try:
-        real_image_code = redis_instance.get('ImageCode_' + image_code_id)
+        real_image_code = redis_instance.get('ImageCode' + image_code_id)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='获取数据失败')
+        return jsonify(errno=RET.DBERR, errmsg='获取数据失败')
     # 判断获取结果是否存在
     if not real_image_code:
-        return jsonify(errno=RET.NODATA,errmsg='图片验证码已过期')
+        return jsonify(errno=RET.NODATA, errmsg='图片验证码已过期')
     # 删除redis中存储的图片验证码，因为图片验证码只能get一次，只能比较一次
     try:
-        redis_instance.delete('ImageCode_' + image_code_id)
+        redis_instance.delete('ImageCode' + image_code_id)
     except Exception as e:
         current_app.logger.error(e)
     # 比较图片验证码是否正确
@@ -90,20 +91,21 @@ def send_sms_code():
     sms_code = '%06d' % random.randint(0, 999999)
     # 存储在redis中，key可以拼接手机号
     try:
-        redis_instance.setex('SMSCode_' + mobile,constants.SMS_CODE_REDIS_EXPIRES,sms_code)
+        redis_instance.setex('SMSCode_' + mobile, constants.SMS_CODE_REDIS_EXPIRES, sms_code)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.DBERR,errmsg='保存数据失败')
+        return jsonify(errno=RET.DBERR, errmsg='保存数据失败')
     # 调用云通讯发送短信
     try:
         ccp = sms.CCP()
-        result = ccp.send_template_sms(mobile,[sms_code,constants.SMS_CODE_REDIS_EXPIRES / 60],1)
+        result = ccp.send_template_sms(mobile, [sms_code, constants.SMS_CODE_REDIS_EXPIRES], 1)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.THIRDERR,errmsg='发送短信异常')
+        return jsonify(errno=RET.THIRDERR, errmsg='发送短信异常')
     # 判断result是否成功
     if result == 0:
-        return jsonify(errno=RET.OK,errmsg='发送成功')
+        return jsonify(errno=RET.OK, errmsg='发送成功')
     else:
-        return jsonify(errno=RET.THIRDERR,errmsg='发送失败')
+        return jsonify(errno=RET.THIRDERR, errmsg='发送失败')
+
     pass
