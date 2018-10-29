@@ -110,6 +110,24 @@ $(function(){
         }
 
         // 发起登录请求
+        var paremts={
+            "mobile":mobile,
+            "password":password,
+        }
+        $.ajax({
+            url:"/login",
+            type:"post",
+            contentType:"application/json",
+            data:JSON.stringify(paremts),
+            success:function (data) {
+                if(data.errno==0){
+                    location.reload()
+                }else{
+                    $("#login-password-err").html(data.errmsg);
+                    $("#login-password-err").show();
+                }
+            }
+        })
     })
 
 

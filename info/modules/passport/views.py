@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from . import passport_blue
 from flask import request,jsonify,current_app,make_response,session
 # 导入自定义的状态码
@@ -192,3 +194,60 @@ def register():
     session["mobile"]=user.mobile
     # 返回结果
     return jsonify(errno=RET.OK, errmsg='OK')
+
+@passport_blue.route("/login",methods=["POST"])
+def login():
+    """
+    用户登录
+    1、获取参数，post请求，json数据，mobile，password
+    2、检查参数的完整性
+    3、检查手机号的格式
+    4、根据手机号查询mysql，确认用户已注册
+    5、判断查询结果
+    6、判断密码是否正确
+    7、保存用户登录时间，当前时间
+    8、提交数据到mysql数据库
+    9、缓存用户信息，注意：登录可以执行多次，用户有可能修改昵称，也有可能不改。
+    session['nick_name'] = user.nick_name
+    10、返回结果"""
+    #获取参数
+    mobile=request.json.get("mobile")
+    password=request.json.get("password")
+    #检查参数
+    if not all([mobile,password]):
+        return jsonify(errno=RET.PARAMERR,errmsg="参数不完整4")
+    # 校验手机号
+    if not re.match(r'1[3456789]\d{9}$', mobile):
+        return jsonify(errno=RET.PARAMERR, errmsg='手机号格式错误')
+    # 根据手机号查询mysql，确认用户已注册
+    try:
+        user=User.query.filter_by(mobile=mobile).first()
+        # user=User.query.filter(User.mobile==mobile).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR,errmsg="用户查询失败")
+    # 判断用户是否存在
+    # if not user:
+    #     return jsonify(errno=RET.NODATA,errmsg='用户未注册')
+    # import hashlib
+    # hashlib.sha1
+    # 判断密码是否正确
+    # if not user.check_password(password):
+    #     return jsonify(errno=RET.PWDERR,errmsg='密码错误')
+    if user is None or not user.check_password(password):
+        return jsonify(errno=RET.DATAERR, errmsg='用户名或密码错误')
+    # 保存用户的登录时间
+    user.last_login=datetime.now()
+    # 提交数据到mysql数据库
+    try:
+        db.session.add(user)
+        db.session.commit()
+    except Exception as e:
+        current_app.logger.error(e)
+        db.session.rollback()
+        return jsonify(errno=RET.DBERR,errmsg='保存数据失败')
+    # 缓存用户信息
+    session["user_id"]=user.id
+    session["mobile"]=mobile
+    session["nick_name"]=user.mobile
+    return jsonify(errno=RET.OK,errmsg="OK")
