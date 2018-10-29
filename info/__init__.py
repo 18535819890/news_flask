@@ -7,7 +7,8 @@ from config import Config, config_dict
 import logging
 from logging.handlers import RotatingFileHandler
 from redis import StrictRedis
-
+# 导入生成 csrf_token 值的函数
+from flask_wtf.csrf import generate_csrf
 # 实例化redis连接对象,需要存储和业务相关的数据比如图片验证码
 redis_instance = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT,decode_responses=True)
 # 实例化sqlalchemy对象
@@ -33,6 +34,8 @@ def create_app(config_name):
 
     # 使用session
     Session(app)
+
+    db.init_app(app)
 
     # 导入蓝图对象，注册蓝图
     from info.modules.news import api

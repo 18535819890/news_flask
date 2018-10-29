@@ -144,19 +144,32 @@ $(function(){
         }
 
         // 发起注册请求
-
+        var paramets={
+            "mobile":mobile,
+            "sms_code":smscode,
+            "password":password,
+        }
+        $.ajax({
+            url:"/register",
+            type:"post",
+            data:JSON.stringify(paramets),
+            contentType:"application/json",
+            success:function (data) {
+                if(data.errno=="0"){
+                    // 表示刷新当前页面
+                    location.reload()
+                }else{
+                    $('#register-password-err').html(data.errmsg);
+                    $('#register-password-err').show();
+                }
+            }
+        })
     })
 })
 
 var imageCodeId = ""
 
 // TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
-// function generateImageCode() {
-//     imageCodeId=generateUUID()
-//     //http://127.0.0.1:5000/image_code?image_code_id=UUID
-//     var url="/image_code?image_code_id="+imageCodeId
-//     $(".get_pic_code").attr("src",url);
-// }
 function generateImageCode() {
     imageCodeId = generateUUID();
     //http://127.0.0.1:5000/image_code?image_code_id=UUID
