@@ -11,7 +11,7 @@ from info import redis_instance,constants,db
 import re,random
 from info.libs.yuntongxun import sms
 from info.models import User
-
+#
 #用蓝图路由映射
 @passport_blue.route("/image_code")
 def generate_image_code():
