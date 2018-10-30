@@ -287,3 +287,10 @@ function generateUUID() {
     });
     return uuid;
 }
+
+//退出登录
+function logout() {
+    $.get("/logout",function (data) {
+        location.reload()
+    })
+}
