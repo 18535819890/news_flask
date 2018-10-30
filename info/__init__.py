@@ -1,3 +1,5 @@
+
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_session import Session
@@ -9,6 +11,8 @@ from logging.handlers import RotatingFileHandler
 from redis import StrictRedis
 # 导入生成 csrf_token 值的函数
 from flask_wtf.csrf import generate_csrf
+# 导入flask_wtf扩展提供的csrf保护功能
+from flask_wtf import csrf,CSRFProtect
 # 实例化redis连接对象,需要存储和业务相关的数据比如图片验证码
 redis_instance = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT,decode_responses=True)
 # 实例化sqlalchemy对象
@@ -34,8 +38,19 @@ def create_app(config_name):
 
     # 使用session
     Session(app)
-
+    # 通过函数调用，让db和程序实例进行关联
     db.init_app(app)
+
+    # 项目开启csrf保护
+    CSRFProtect(app)
+    # 生成csrf_token,写入到客户端浏览器的cookie中
+    # 请求钩子，在每次请求后都会执行
+    @app.after_request
+    def after_request(response):
+        csrf_token=csrf.generate_csrf()
+        response.set_cookie("csrf_token",csrf_token)
+        return response
+
 
     # 导入蓝图对象，注册蓝图
     from info.modules.news import api

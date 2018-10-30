@@ -119,6 +119,7 @@ $(function(){
             type:"post",
             contentType:"application/json",
             data:JSON.stringify(paremts),
+            headers:{"X-CSRFToken":getCookie("csrf_token")},
             success:function (data) {
                 if(data.errno==0){
                     location.reload()
@@ -172,6 +173,7 @@ $(function(){
             type:"post",
             data:JSON.stringify(paramets),
             contentType:"application/json",
+            headers:{"X-CSRFToken":getCookie("csrf_token")},
             success:function (data) {
                 if(data.errno=="0"){
                     // 表示刷新当前页面
@@ -225,6 +227,7 @@ function sendSMSCode() {
         type:'post',
         data:JSON.stringify(params),
         contentType:'application/json',
+        headers:{"X-CSRF-Token":getCookie("csrf_token")},
         success:function(resp){
             if (resp.errno == '0'){
                 // 设置定时器
