@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>
         {% block titleblock %}
+
         {% endblock %}
         </title>
     <link rel="stylesheet" type="text/css" href="../../static/news/css/reset.css">
@@ -11,6 +12,7 @@
     <script type="text/javascript" src="../../static/news/js/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="../../static/news/js/main.js"></script>
     {% block jsblock %}
+
     {% endblock %}
 </head>
 <body>
@@ -18,13 +20,12 @@
         <div class="header">
             <a href="/" class="logo fl"><img src="../../static/news/images/logo.png" alt="logo"></a>
             <ul class="menu fl">
-                {% for category in data.category_list %}
-                    <li class="{% if loop.index0 == 0 %}active{% endif %}" data-cid="{{ category.id}}"><a href="javascript:;">{{ category.name}}</a></li>
-                {% endfor %}
+                {% block categoryblock %}
 
+                {% endblock %}
             </ul>
                 {# 判断用户是否登录 #}
-                {% if data.user_info %}
+            {% if data.user_info %}
 
                  <!-- 用户登录后显示下面，隐藏上面 -->
                 <div class="user_login fr">
@@ -41,6 +42,7 @@
     </div>
     <div class="conter_con">
         {% block contentblock%}
+
         {% endblock %}
         <div class="rank_con fr">
             <div class="rank_title">
