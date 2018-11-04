@@ -188,7 +188,7 @@ def register():
         current_app.logger.error(e)
         db.session.rollback()
         return jsonify(errno=RET.DBERR,errmsg="存储用户信息出错")
-    # 10、缓存用户信息，使用session对象到redis数据库中；
+    # 10、缓存用户信息，使用session对象存到redis数据库中；
     session["user_id"]=user.id
     session["nick_name"]=user.nick_name
     session["mobile"]=user.mobile
